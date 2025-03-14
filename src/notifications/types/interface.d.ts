@@ -50,7 +50,7 @@ export type INotificationWithRecipientEmail = {
 
 export interface IEmailNotification {
   to: string[];
-  body: string;
+  html: string;
   from: string;
   subject: string;
   attachments?: { filename: string; path: string }[];

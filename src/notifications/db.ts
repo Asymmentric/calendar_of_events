@@ -1,3 +1,4 @@
+import moment from "moment";
 import PostgresDB from "../config/database/postgres";
 import { IUserExistsResponse } from "../users/types/interface";
 import { INotificationStatus } from "./types/interface";
@@ -32,6 +33,25 @@ class NotificationDb {
     const { rows } = await PostgresDB.query(query, [id]);
 
     return rows[0] as unknown as IUserExistsResponse;
+  };
+
+  public updateNotificationStatusQuery = async (
+    ids: string[],
+    status: string
+  ) => {
+    const { rows: statusId } = await PostgresDB.query(
+      `SELECT id FROM notification_statuses WHERE name = $1`,
+      [status]
+    );
+
+    const idsString = ids.map((id) => `'${id}'`).join(",");
+    const query = `UPDATE notifications SET status = $1, updated_at = $2 WHERE id = (${idsString})`;
+
+    const { rows } = await PostgresDB.query(query, [
+      statusId[0].id,
+      moment().format(),
+    ]);
+    return rows;
   };
 }
 

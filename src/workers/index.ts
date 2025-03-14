@@ -2,7 +2,11 @@ import amqp, { Channel, Connection } from "amqplib";
 import { variables } from "../config/envLoader";
 import AnotherError from "../utils/errors/anotherError";
 import Logger from "../utils/logger";
-import NotificationService from "../mailer";
+import MailerService from "../mailer";
+import NotificationService from "../notifications/service";
+import PostgresDB from "../config/database/postgres";
+
+const { updateNotificationStatusQuery } = new NotificationService();
 
 class MessageQueueWorker {
   private Exchanges = { NOTIFICATION: "notification" };
@@ -76,7 +80,7 @@ class MessageQueueWorker {
               messageObj.type === "notification" &&
               messageObj.notificationDetails.type === "email"
             ) {
-              const info = await new NotificationService().sendEmail(
+              const info = await new MailerService().sendEmail(
                 messageObj.notificationDetails.data
               );
               if (info) {
@@ -85,6 +89,17 @@ class MessageQueueWorker {
                 );
                 Logger.Log?.debug(info);
                 this.channel?.ack(message);
+
+                const acceptedEmails = new Set(info.accepted);
+
+                const successMessageList: string[] = messageObj.notificationData
+                  .filter((i: any) => acceptedEmails.has(i.email))
+                  .map((i: any) => i.id);
+
+                await updateNotificationStatusQuery(
+                  successMessageList,
+                  "delivered"
+                );
               }
             }
           }
@@ -100,6 +115,7 @@ class MessageQueueWorker {
 
 (async () => {
   new Logger();
+  new PostgresDB();
   const mqWorker = new MessageQueueWorker();
   Logger.Log?.info("Starting Worker...");
   await mqWorker.consumeNotificationExchange();

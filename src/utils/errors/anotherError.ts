@@ -10,6 +10,7 @@ class AnotherError extends CustomError {
   statusCode: number = 400;
   returnError(): IErrorReturn {
     return {
+      success: false,
       message: this.message,
       code: this.codePhrase,
       statusCode: this.statusCode,

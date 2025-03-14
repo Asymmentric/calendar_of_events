@@ -10,6 +10,7 @@ class NotFoundError extends CustomError {
   statusCode: number = 404;
   returnError(): IErrorReturn {
     return {
+      success: false,
       message: this.message,
       code: this.codePhrase,
       statusCode: this.statusCode,

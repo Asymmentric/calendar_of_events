@@ -31,6 +31,12 @@ const ENV = [
   "EMAIL_USER",
   "EMAIL_PASSWORD",
   "EMAIL_FROM_USER",
+
+  //S3
+  "AWS_ACCESS_KEY_ID",
+  "AWS_SECRET_ACCESS_KEY",
+  "AWS_REGION",
+  "AWS_BUCKET_NAME",
 ] as const;
 
 const loadVars = (env: readonly String[]): Record<string, string> => {

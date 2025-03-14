@@ -1,4 +1,5 @@
 export interface IErrorReturn {
+  success: boolean;
   message: string;
   statusCode: number;
   code: IErrorCodes;

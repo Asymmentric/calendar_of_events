@@ -112,7 +112,7 @@ class NotificationService extends NotificationDb {
   }) => {
     try {
       const {
-        body,
+        html,
         attachments = [],
         from = variables.EMAIL_FROM_USER,
         subject,
@@ -122,7 +122,7 @@ class NotificationService extends NotificationDb {
         from,
         to: notificationData.map(({ email }) => email),
         subject,
-        body: body || `<h1> Testing Sending Tickets</h1>`,
+        html: html || `<h1> Testing Sending Tickets</h1>`,
         attachments: attachments,
       };
 
